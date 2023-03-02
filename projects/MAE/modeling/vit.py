@@ -46,6 +46,7 @@ class VisionTransformer(libai.models.vision_transformer.VisionTransformer):
         global_pool=False,
         num_classes=1000,
         loss_func=None,
+        device='cuda',
     ):
         super(VisionTransformer, self).__init__(
             img_size=img_size,
@@ -60,6 +61,7 @@ class VisionTransformer(libai.models.vision_transformer.VisionTransformer):
             drop_path_rate=drop_path_rate,
             num_classes=num_classes,
             loss_func=loss_func,
+            device=device,
         )
         self.global_pool = global_pool
 

@@ -60,8 +60,10 @@ class VisionTransformer(nn.Module):
         drop_path_rate=0.0,
         num_classes=1000,
         loss_func=None,
+        device='cuda',
     ):
         super().__init__()
+        self.device = device
         self.img_size = img_size
         self.num_classes = num_classes
         self.patch_embed = PatchEmbedding(
@@ -105,6 +107,7 @@ class VisionTransformer(nn.Module):
                     output_dropout_prob=drop_rate,
                     drop_path_prob=dpr[i],
                     layer_idx=i,
+                    device=device,
                 )
                 for i in range(depth)
             ]

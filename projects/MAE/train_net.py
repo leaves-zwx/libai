@@ -71,6 +71,8 @@ def main(args):
     cfg.train.amp.enabled = args.amp
     cfg.train.log_period = args.log_period
 
+    cfg.model.device = args.device
+
     default_setup(cfg, args)
 
     if args.fast_dev_run:

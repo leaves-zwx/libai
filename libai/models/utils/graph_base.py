@@ -141,6 +141,8 @@ class GraphBase(nn.Graph):
                         module_block.to(nn.graph.GraphModule).activation_checkpointing = True
 
     def set_pipeline_stage_id(self):
+        if dist.get_dist_util().pipeline_parallel_size == 1:
+            return
         if hasattr(self.model, "origin"):
             if hasattr(type(self.model.origin), "set_pipeline_stage_id"):
                 type(self.model.origin).set_pipeline_stage_id(self.model)

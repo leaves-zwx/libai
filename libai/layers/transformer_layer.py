@@ -74,9 +74,11 @@ class TransformerLayer(nn.Module):
         apply_residual_post_layernorm=False,
         attn_mask_type=AttnMaskType.padding,
         *,
-        layer_idx=0
+        layer_idx=0,
+        device='cuda'
     ):
         super().__init__()
+        self.device = device
         self.hidden_size = hidden_size
         self.ffn_hidden_size = ffn_hidden_size
         self.num_attention_heads = num_attention_heads
@@ -155,12 +157,13 @@ class TransformerLayer(nn.Module):
                 used for incremental decoding.
         """
         # Change placement for pipeline parallelsim
-        hidden_states = hidden_states.to_global(placement=dist.get_layer_placement(self.layer_idx))
+        hidden_states = hidden_states.to_global(
+            placement=dist.get_layer_placement(self.layer_idx, device_type=self.device))
 
         # hidden_states shape: (batch_size, seq_length, hidden_size)
         if attention_mask is not None:
             attention_mask = attention_mask.to_global(
-                placement=dist.get_layer_placement(self.layer_idx)
+                placement=dist.get_layer_placement(self.layer_idx, device_type=self.device)
             )
 
         if past_key_value is not None:

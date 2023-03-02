@@ -293,9 +293,14 @@ class GraphTrainer(TrainerBase):
         super().__init__()
 
         graph.model.train()
+        self.device = graph.model.device
         self.data_loader = data_loader
         self._data_loader_iter = iter(data_loader)
-        self.graph = graph
+        if self.device == "gcu":
+            import oneflow_xrt as flowrt
+            self.graph = flowrt.XRTModule(graph, engine="gcu")
+        else:
+            self.graph = graph
         self.grad_acc_steps = grad_acc_steps
         self._temp_data = None
         self._temp_count = 0
@@ -328,7 +333,7 @@ class GraphTrainer(TrainerBase):
         self._temp_data = None
 
         data = get_batch(
-            data, input_placement_device, getattr(self.data_loader, "mixup_func", None)
+            data, self.device, getattr(self.data_loader, "mixup_func", None)
         )
 
         data_time = time.perf_counter() - start

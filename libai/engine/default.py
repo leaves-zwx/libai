@@ -317,6 +317,8 @@ class DefaultTrainer(TrainerBase):
         self.optimizer = self.build_optimizer(cfg, self.model)
         self.lr_scheduler = self.build_lr_scheduler(cfg, self.optimizer)
 
+        self.model.to_global(placement=flow.placement(
+            self.model.device, list(range(dist.get_world_size()))))
         if cfg.graph.enabled:
             self.graph_train = self.build_graph(
                 cfg, self.model, self.optimizer, self.lr_scheduler, is_train=True
