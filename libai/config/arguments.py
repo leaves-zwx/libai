@@ -77,4 +77,67 @@ For python-based LazyConfig, use "path.key=value".
         default=None,
         nargs=argparse.REMAINDER,
     )
+    parser.add_argument(
+        '--train_data_path',
+        default='/data/datasets/imagenet_raw/',
+        help='train dataset path')
+    parser.add_argument(
+        '--test_data_path',
+        default='/data/datasets/imagenet_raw/',
+        help='test dataset path')
+    parser.add_argument(
+        '--pretrined_weight_path',
+        default='mae_pretrain_vit_base.pth',
+        help='pretrined weight path')
+    parser.add_argument(
+        '--pretrined_weight_style',
+        default='pytorch',
+        choices=["pytorch", "oneflow"],
+        help='pretrined weight style')
+    parser.add_argument(
+        "--device",
+        default="cuda",
+        choices=["cpu", "cuda", "gcu"],
+        help='device'
+    )
+    parser.add_argument(
+        "--train_micro_batch_size",
+        default=32,
+        type=int,
+        help='train batch size per device'
+    )
+    parser.add_argument(
+        "--test_micro_batch_size",
+        default=32,
+        type=int,
+        help='test batch size per device'
+    )
+    parser.add_argument(
+        "--num_accumulation_steps",
+        default=4,
+        type=int,
+        help='num accumulation steps to update'
+    )
+    parser.add_argument(
+        "--n_gpus",
+        default=8,
+        type=int,
+        help='num devices'
+    )
+    parser.add_argument(
+        "--log_period",
+        default=20,
+        type=int,
+        help='log frequency'
+    )
+    parser.add_argument(
+        "--do_eval",
+        default=False,
+        action='store_true',
+        help="skip evaulation")
+    parser.add_argument(
+        "--amp",
+        default=False,
+        action='store_true',
+        help="enable amp training")
     return parser

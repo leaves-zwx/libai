@@ -74,14 +74,24 @@ class LayerNorm(nn.Module):
         begin_norm_axis = x.ndim - len(self.normalized_shape)
         begin_params_axis = x.ndim - len(self.normalized_shape)
         if self.elementwise_affine:
-            y = flow._C.layer_norm_affine(
+            # flow._C.layer_norm_affine not impl on cpu
+            # change it to flow.nn.functional.layer_norm for debug
+            # TODO: enable flow._C.layer_norm_affine on GCU
+            y = flow.nn.functional.layer_norm(
                 x,
+                self.normalized_shape,
                 self.weight,
                 self.bias,
-                begin_norm_axis=begin_norm_axis,
-                begin_params_axis=begin_params_axis,
-                epsilon=self.eps,
+                eps=self.eps,
             )
+            # y = flow._C.layer_norm_affine(
+            #     x,
+            #     self.weight,
+            #     self.bias,
+            #     begin_norm_axis=begin_norm_axis,
+            #     begin_params_axis=begin_params_axis,
+            #     epsilon=self.eps,
+            # )
         else:
             y = flow._C.layer_norm(
                 x,

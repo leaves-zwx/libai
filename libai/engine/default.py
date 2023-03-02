@@ -503,15 +503,24 @@ class DefaultTrainer(TrainerBase):
             data.reraise()
 
         if mixup_func is not None:
-            images, labels = mixup_func(
-                data.get("images").tensor.cuda(),
-                data.get("labels").tensor.cuda(),
-            )
+            if input_placement_device == "cuda":
+                images, labels = mixup_func(
+                    data.get("images").tensor.cuda(),
+                    data.get("labels").tensor.cuda(),
+                )
+            else:
+                images, labels = mixup_func(
+                    data.get("images").tensor,
+                    data.get("labels").tensor,
+                )
             data.get("images").tensor = images
             data.get("labels").tensor = labels
 
         ret_dict = {}
         for key, value in data.get_fields().items():
+            # add print() to avoid an Error when device is GCU
+            # TODO: debug and delete next line
+            print(value)
             value.to_global(device_type=input_placement_device)
             ret_dict[key] = value.tensor
         return ret_dict

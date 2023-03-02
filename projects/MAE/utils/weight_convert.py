@@ -111,7 +111,7 @@ def load_torch_checkpoint(model, cfg, path="./mae_finetuned_vit_base.pth", stric
                 continue
             val = val.detach().cpu().numpy()
             val = flow.tensor(val).to_global(
-                sbp=flow.sbp.broadcast, placement=flow.placement("cuda", ranks=[0])
+                sbp=flow.sbp.broadcast, placement=flow.placement("cpu", ranks=[0])
             )
             new_parameters[key] = val
 

@@ -51,6 +51,26 @@ class Trainer(DefaultTrainer):
 def main(args):
     cfg = LazyConfig.load(args.config_file)
     cfg = LazyConfig.apply_overrides(cfg, args.opts)
+    cfg.eval_only = args.eval_only
+
+    cfg.dataloader.train.dataset[0].root = args.train_data_path
+    cfg.dataloader.test[0].dataset.root = args.test_data_path
+
+    cfg.finetune.path = args.pretrined_weight_path
+    cfg.finetune.weight_style = args.pretrined_weight_style
+
+    cfg.n_gpus = args.n_gpus
+
+    cfg.train.input_placement_device = 'cpu'
+    cfg.train.dist.device_type = 'cpu'
+    cfg.train.train_micro_batch_size = args.train_micro_batch_size
+    cfg.train.num_accumulation_steps = args.num_accumulation_steps
+    cfg.train.test_micro_batch_size = args.test_micro_batch_size
+    cfg.train.dist.data_parallel_size = args.n_gpus
+    cfg.train.evaluation.enabled = args.do_eval
+    cfg.train.amp.enabled = args.amp
+    cfg.train.log_period = args.log_period
+
     default_setup(cfg, args)
 
     if args.fast_dev_run:
@@ -80,7 +100,8 @@ def main(args):
     # manual different seed for each rank
     seed_for_rank = cfg.train.seed + flow.env.get_rank()
     flow.manual_seed(seed_for_rank)
-    flow.cuda.manual_seed(seed_for_rank)
+    if flow.cuda.is_available():
+        flow.cuda.manual_seed(seed_for_rank)
     np.random.seed(seed_for_rank)
     random.seed(seed_for_rank)
 
