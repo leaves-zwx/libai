@@ -520,9 +520,6 @@ class DefaultTrainer(TrainerBase):
 
         ret_dict = {}
         for key, value in data.get_fields().items():
-            # add print() to avoid an Error when device is GCU
-            # TODO: debug and delete next line
-            print(value)
             value.to_global(device_type=input_placement_device)
             ret_dict[key] = value.tensor
         return ret_dict
