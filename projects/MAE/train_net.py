@@ -69,6 +69,7 @@ def main(args):
     cfg.train.dist.data_parallel_size = args.n_gpus
     cfg.train.evaluation.enabled = args.do_eval
     cfg.train.amp.enabled = args.amp
+    cfg.train.activation_checkpoint.enabled = args.activation_checkpoint
     cfg.train.log_period = args.log_period
 
     cfg.model.device = args.device

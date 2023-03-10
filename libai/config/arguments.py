@@ -140,4 +140,9 @@ For python-based LazyConfig, use "path.key=value".
         default=False,
         action='store_true',
         help="enable amp training")
+    parser.add_argument(
+        "--activation_checkpoint",
+        default=False,
+        action='store_true',
+        help="enable activation checkpoint")
     return parser
