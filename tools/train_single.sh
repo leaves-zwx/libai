@@ -10,6 +10,5 @@ python3 -u projects/MAE/train_net.py \
         --config-file projects/MAE/configs/mae_finetune.py \
         --device gcu \
         --num_accumulation_steps 1 \
-        --n_gpus 1 \
         --log_period 10 \
         --warmup_ratio 0.0
