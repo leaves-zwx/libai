@@ -58,20 +58,21 @@ def main(args):
 
     cfg.finetune.path = args.pretrined_weight_path
     cfg.finetune.weight_style = args.pretrined_weight_style
-
-    cfg.n_gpus = args.n_gpus
-
     cfg.train.input_placement_device = 'cpu'
     cfg.train.dist.device_type = 'cpu'
     cfg.train.train_micro_batch_size = args.train_micro_batch_size
     cfg.train.num_accumulation_steps = args.num_accumulation_steps
     cfg.train.test_micro_batch_size = args.test_micro_batch_size
-    cfg.train.dist.data_parallel_size = args.n_gpus
+    cfg.train.dist.data_parallel_size = args.data_parallel_size
+    cfg.train.dist.tensor_parallel_size = args.tensor_parallel_size
+    cfg.train.dist.pipeline_parallel_size = args.pipeline_parallel_size
     cfg.train.evaluation.enabled = args.do_eval
     cfg.train.amp.enabled = args.amp
     cfg.train.activation_checkpoint.enabled = args.activation_checkpoint
     cfg.train.log_period = args.log_period
     cfg.train.warmup_ratio = args.warmup_ratio
+    cfg.train.train_epoch = args.train_epoch
+    cfg.train.train_iter = args.train_iter
 
     cfg.model.device = args.device
 

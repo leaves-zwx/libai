@@ -28,7 +28,7 @@ train = dict(
     train_iter=10000,
     # The total training epochs, will be scaled to training iterations automatically.
     # The actual total training iterations will be calculated by the
-    # formula `max(train_iter, train_epoch * iter_per_epoch)`.
+    # formula `min(train_iter, train_epoch * iter_per_epoch)`.
     train_epoch=0,
     consumed_train_samples=0,
     consumed_valid_samples=0,
@@ -52,11 +52,11 @@ train = dict(
 
     # NCCL fusion threshold megabytes, set to 0 to
     # compatible with previous version of OneFlow.
-    nccl_fusion_threshold_mb=16,
+    nccl_fusion_threshold_mb=256,
 
     # Maximum number of ops of NCCL fusion, set to 0 to
     # compatible with previous version of OneFlow.
-    nccl_fusion_max_ops=24,
+    nccl_fusion_max_ops=1024,
 
     # Enable ZeRO Optimization to allow for training with larger models.
     # This optimization will reduce optimizer stages memory consumption

@@ -33,10 +33,6 @@ optim = get_config("common/optim.py").optim
 graph = get_config("common/models/graph.py").graph
 dataloader = get_config("common/data/imagenet.py").dataloader
 
-
-# number devices
-n_gpus = 8
-
 # Graph training
 graph.enabled = True
 
@@ -69,13 +65,20 @@ dataloader.train.mixup_func = LazyCall(Mixup)(
 )
 
 
+# Distributed Settings
+train.dist.pipeline_num_layers = model.depth
+train.dist.data_parallel_size = 1
+train.dist.tensor_parallel_size = 1
+train.dist.pipeline_parallel_size = 1
+
+
 # Refine training settings for MAE finetune
 train.train_micro_batch_size = 32
 train.num_accumulation_steps = 4
 train.test_micro_batch_size = 32
-effective_batch_size = train.train_micro_batch_size * train.num_accumulation_steps * n_gpus
+effective_batch_size = train.train_micro_batch_size * train.num_accumulation_steps * train.dist.data_parallel_size
 
-train.train_epoch = 100
+train.train_epoch = 1
 train.warmup_ratio = 5 / 100
 train.log_period = 20
 train.evaluation.eval_after_n_epoch = 1
@@ -120,12 +123,6 @@ else:
         min_lr=1e-6,
     )
 
-
-# Distributed Settings
-train.dist.pipeline_num_layers = model.depth
-train.dist.data_parallel_size = n_gpus
-train.dist.tensor_parallel_size = 1
-train.dist.pipeline_parallel_size = 1
 
 
 eval_only = False

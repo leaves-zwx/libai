@@ -713,7 +713,10 @@ class DefaultTrainer(TrainerBase):
 
         # Automatically scale iteration num depend on the settings
         # The total iters in one epoch is `len(dataset) / global_batch_size`
-        cfg.train.train_iter = max(
+        if train_iter == -1:
+            cfg.train.train_iter = math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size)
+        else:
+            cfg.train.train_iter = min(
             math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size),
             train_iter,
         )

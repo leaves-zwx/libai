@@ -96,7 +96,7 @@ For python-based LazyConfig, use "path.key=value".
         help='pretrined weight style')
     parser.add_argument(
         "--device",
-        default="cuda",
+        default="gcu",
         choices=["cpu", "cuda", "gcu"],
         help='device'
     )
@@ -114,15 +114,9 @@ For python-based LazyConfig, use "path.key=value".
     )
     parser.add_argument(
         "--num_accumulation_steps",
-        default=4,
+        default=1,
         type=int,
         help='num accumulation steps to update'
-    )
-    parser.add_argument(
-        "--n_gpus",
-        default=8,
-        type=int,
-        help='num devices'
     )
     parser.add_argument(
         "--log_period",
@@ -151,4 +145,37 @@ For python-based LazyConfig, use "path.key=value".
         default=False,
         action='store_true',
         help="enable activation checkpoint")
+    parser.add_argument(
+        "--data_parallel_size",
+        default=1,
+        type=int,
+        help='data_parallel_size'
+    )
+    parser.add_argument(
+        "--tensor_parallel_size",
+        default=1,
+        type=int,
+        help='tensor_parallel_size'
+    )
+    parser.add_argument(
+        "--pipeline_parallel_size",
+        default=1,
+        type=int,
+        help='pipeline_parallel_size'
+    )
+    # The total training epochs, will be scaled to training iterations automatically.
+    # The actual total training iterations will be calculated by the
+    # formula `min(train_iter, train_epoch * iter_per_epoch)`.
+    parser.add_argument(
+        "--train_epoch",
+        default=1,
+        type=int,
+        help='train_epoch'
+    )
+    parser.add_argument(
+        "--train_iter",
+        default=-1,
+        type=int,
+        help='The total training iterations(-1 means this parameter has no effect)'
+    )
     return parser

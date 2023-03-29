@@ -42,14 +42,15 @@ transform_train = LazyCall(transforms.Compose)(
 )
 dataloader.train.dataset[0].transform = transform_train
 
-
-# number devices
-n_gpus = 8
+# Distributed Settings
+train.dist.data_parallel_size = 1
+train.dist.tensor_parallel_size = 1
+train.dist.pipeline_parallel_size = 1
 
 # Refine training settings for MAE
 train.train_micro_batch_size = 64
 train.num_accumulation_steps = 8
-effective_batch_size = train.train_micro_batch_size * train.num_accumulation_steps * n_gpus
+effective_batch_size = train.train_micro_batch_size * train.num_accumulation_steps * train.dist.data_parallel_size
 
 train.train_epoch = 800
 train.warmup_ratio = 40 / 800
@@ -94,9 +95,3 @@ train.scheduler = LazyCall(warmup_cosine_lr_scheduler)(
 # AMP
 train.amp.enabled = True
 
-
-# Distributed Settings
-train.dist.data_parallel_size = n_gpus
-train.dist.tensor_parallel_size = 1
-train.dist.pipeline_parallel_size = 1
-# train.dist.pipeline_num_layers = model.depth
