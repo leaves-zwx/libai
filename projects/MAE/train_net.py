@@ -71,6 +71,7 @@ def main(args):
     cfg.train.amp.enabled = args.amp
     cfg.train.activation_checkpoint.enabled = args.activation_checkpoint
     cfg.train.log_period = args.log_period
+    cfg.train.warmup_ratio = args.warmup_ratio
 
     cfg.model.device = args.device
 

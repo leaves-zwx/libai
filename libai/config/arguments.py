@@ -131,6 +131,12 @@ For python-based LazyConfig, use "path.key=value".
         help='log frequency'
     )
     parser.add_argument(
+        "--warmup_ratio",
+        default=0.05,
+        type=float,
+        help='warmup ratio to caculate warmup steps'
+    )
+    parser.add_argument(
         "--do_eval",
         default=False,
         action='store_true',
