@@ -52,6 +52,7 @@ def main(args):
     cfg = LazyConfig.load(args.config_file)
     cfg = LazyConfig.apply_overrides(cfg, args.opts)
     cfg.eval_only = args.eval_only
+    cfg.is_test_case = args.is_test_case
 
     cfg.dataloader.train.dataset[0].root = args.train_data_path
     cfg.dataloader.test[0].dataset.root = args.test_data_path

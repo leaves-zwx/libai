@@ -178,4 +178,9 @@ For python-based LazyConfig, use "path.key=value".
         type=int,
         help='The total training iterations(-1 means this parameter has no effect)'
     )
+    parser.add_argument(
+        "--is_test_case",
+        default=False,
+        action='store_true',
+        help="whether is test case or not.")
     return parser

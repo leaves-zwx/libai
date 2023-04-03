@@ -295,7 +295,8 @@ class GraphTrainer(TrainerBase):
         graph.model.train()
         self.device = graph.model.device
         self.data_loader = data_loader
-        self._data_loader_iter = iter(data_loader)
+        if data_loader is not None:
+            self._data_loader_iter = iter(data_loader)
         if self.device == "gcu":
             import oneflow_xrt as flowrt
             self.graph = flowrt.XRTModule(graph, engine="gcu")

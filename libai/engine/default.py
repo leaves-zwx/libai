@@ -252,6 +252,7 @@ class DefaultTrainer(TrainerBase):
         """
         super().__init__()
         self.cfg = cfg
+        self.is_test_case = cfg.is_test_case
         logger = logging.getLogger("libai")
 
         # setup_logger is not called for LiBai
@@ -285,15 +286,16 @@ class DefaultTrainer(TrainerBase):
         self.train_loader = None
         self.test_loader = []
 
-        train_loader, val_loader, test_loader = self.build_train_loader(cfg, self.tokenizer)
-        self.train_loader = train_loader
+        if not cfg.is_test_case:
+            train_loader, val_loader, test_loader = self.build_train_loader(cfg, self.tokenizer)
+            self.train_loader = train_loader
 
-        if val_loader is not None:
-            self.test_loader.append(val_loader)
-        if test_loader is not None:
-            self.test_loader.append(test_loader)
+            if val_loader is not None:
+                self.test_loader.append(val_loader)
+            if test_loader is not None:
+                self.test_loader.append(test_loader)
 
-        self.test_loader.extend(self.build_test_loader(cfg, self.tokenizer))
+            self.test_loader.extend(self.build_test_loader(cfg, self.tokenizer))
 
         if cfg.train.rdma_enabled:
             # set rdma
@@ -709,13 +711,14 @@ class DefaultTrainer(TrainerBase):
 
         # Automatically scale iteration num depend on the settings
         # The total iters in one epoch is `len(dataset) / global_batch_size`
-        if train_iter == -1:
-            cfg.train.train_iter = math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size)
-        else:
-            cfg.train.train_iter = min(
-            math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size),
-            train_iter,
-        )
+        if not cfg.is_test_case:
+            if train_iter == -1:
+                cfg.train.train_iter = math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size)
+            else:
+                cfg.train.train_iter = min(
+                math.ceil(len(data_loader.dataset) * train_epoch / cfg.train.global_batch_size),
+                train_iter,
+            )
         cfg.train.warmup_iter = math.ceil(cfg.train.train_iter * cfg.train.warmup_ratio)
         if not cfg.graph.enabled:
             # In eager mode, dataloader only get micro-batch-size each iter,
@@ -753,7 +756,10 @@ class DefaultTrainer(TrainerBase):
         cfg.train.scheduler.max_iter = cfg.train.train_iter
 
         # train iter per epoch
-        iter_per_epoch = len(data_loader.dataset) // cfg.train.global_batch_size
+        if not cfg.is_test_case:
+            iter_per_epoch = len(data_loader.dataset) // cfg.train.global_batch_size
+        else:
+            iter_per_epoch = train_iter
 
         # rescale eval period
         if try_get_key(cfg, "train.evaluation.eval_after_n_epoch"):
