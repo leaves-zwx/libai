@@ -123,8 +123,8 @@ def main(args):
     model = graph.model
     module = model.to(flow.nn.Module)
     params = dict(reversed(list(module.named_parameters())))
-    np_images = np.random.randn(32, 3, 224, 224).astype(np.float32)
-    np_labels = np.random.randn(32, 1000).astype(np.float32)
+    np_images = np.load('./test_case/inputs/images_0.npy').astype(np.float32)
+    np_labels = np.load('./test_case/inputs/labels_0.npy').astype(np.float32)
     images = flow.tensor(np_images).to_global(
         placement=flow.placement(type=args.device, ranks=[0]),
         sbp=(flow.sbp.broadcast,))
