@@ -37,14 +37,18 @@ def compile_helper():
     is invoked on a single process."""
     import os
     import subprocess
-
+    cmd = os.popen('python3.8-config --extension-suffix')
+    so_name = 'helpers{}'.format(cmd.read().strip())
     path = os.path.abspath(os.path.dirname(__file__))
-    ret = subprocess.run(["make", "-C", path])
-    if ret.returncode != 0:
-        logger.info("Making C++ dataset helpers module failed, exiting.")
-        import sys
+    if os.path.exists(os.path.join(path, so_name)):
+        return
+    else:
+        ret = subprocess.run(["make", "-C", path])
+        if ret.returncode != 0:
+            logger.info("Making C++ dataset helpers module failed, exiting.")
+            import sys
 
-        sys.exit(1)
+            sys.exit(1)
 
 
 MaskedLmInstance = collections.namedtuple("MaskedLmInstance", ["index", "label"])
