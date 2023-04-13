@@ -24,6 +24,16 @@ from typing import List
 from setuptools import Extension, find_packages, setup
 
 version = "0.2.0"
+try:
+    git_hash = (
+        subprocess.check_output("git rev-parse --short HEAD", shell=True)
+        .decode()
+        .strip()
+    )
+except:
+    git_hash = "unknown"
+
+version += f".git.{git_hash}"
 package_name = "LiBai"
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,7 +42,6 @@ try:
     sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=cwd).decode("ascii").strip()
 except Exception:
     pass
-
 
 def write_version_file():
     version_path = os.path.join(cwd, "libai", "version.py")
