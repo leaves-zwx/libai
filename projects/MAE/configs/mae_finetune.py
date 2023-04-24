@@ -35,7 +35,7 @@ dataloader = get_config("common/data/imagenet.py").dataloader
 
 
 # number devices
-n_gpus = 8
+n_gpus = 1
 
 # Graph training
 graph.enabled = True
@@ -48,14 +48,14 @@ model.loss_func = LazyCall(SoftTargetCrossEntropy)()
 finetune = OmegaConf.create()
 finetune.enable = True  # only load weight if enable is True
 finetune.weight_style = (
-    "oneflow"  # Set "oneflow" for loading oneflow weights, set "pytorch" for loading torch weights
+    "pytorch"  # Set "oneflow" for loading oneflow weights, set "pytorch" for loading torch weights
 )
-finetune.path = "/path/to/pretrained_mae_weight"
+finetune.path = "./mae_pretrain_vit_base.pth"
 
 
 # Refine data path to imagenet
-dataloader.train.dataset[0].root = "/path/to/imagenet"
-dataloader.test[0].dataset.root = "/path/to/imagenet"
+dataloader.train.dataset[0].root = "/data/dataset/ImageNet/extract"
+dataloader.test[0].dataset.root = "/data/dataset/ImageNet/extract"
 
 # Add Mixup Func
 dataloader.train.mixup_func = LazyCall(Mixup)(
@@ -71,21 +71,23 @@ dataloader.train.mixup_func = LazyCall(Mixup)(
 
 # Refine training settings for MAE finetune
 train.train_micro_batch_size = 32
-train.num_accumulation_steps = 4
+train.num_accumulation_steps = 1
 train.test_micro_batch_size = 32
 effective_batch_size = train.train_micro_batch_size * train.num_accumulation_steps * n_gpus
 
-train.train_epoch = 100
+train.train_iter = 100
 train.warmup_ratio = 5 / 100
 train.log_period = 20
-train.evaluation.eval_after_n_epoch = 1
-train.checkpointer.save_model_after_n_epoch = 1
+train.evaluation.enabled = False
+# train.checkpointer.period = 1000
+train.checkpointer.save_model_after_n_epoch = 2
+train.activation_checkpoint.enabled = True
 
 # Set layer decay for MAE fine-tune
 train.layer_decay = 0.65
 
 # AMP
-train.amp.enabled = True
+train.amp.enabled = False
 
 
 # Base learning in MAE is set to 1.5e-4
@@ -128,4 +130,5 @@ train.dist.tensor_parallel_size = 1
 train.dist.pipeline_parallel_size = 1
 
 
-eval_only = False
+eval_only = OmegaConf.create()
+eval_only.enabled = False

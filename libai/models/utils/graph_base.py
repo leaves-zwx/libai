@@ -76,8 +76,9 @@ class GraphBase(nn.Graph):
         # Enable cuda stream for computation and communication as the same stream.
         # This will reduce memory when using model parallelism.
         dist_util = dist.get_dist_util()
-        if dist_util.is_tensor_model_parallel() or dist_util.is_pipeline_model_parallel():
-            flow.boxing.nccl.enable_use_compute_stream(True)
+        # if dist_util.is_tensor_model_parallel() or dist_util.is_pipeline_model_parallel():
+        #     flow.boxing.nccl.enable_use_compute_stream(True)
+        flow.boxing.nccl.enable_use_compute_stream(False)
 
         # auto_parallel
         if auto_parallel_conf is not None and auto_parallel_conf.enabled:
